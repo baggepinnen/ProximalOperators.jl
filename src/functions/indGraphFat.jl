@@ -9,14 +9,14 @@ struct IndGraphFat{T <: RealOrComplex} <: IndGraph
   AA::Array{T,2}
   tmp::Array{T,1}
   # tmpx::Array{T,1}
-  F::Base.LinAlg.Cholesky{T, Array{T, 2}} #LL factorization
+  F::LinearAlgebra.Cholesky{T, Array{T, 2}} #LL factorization
 end
 
 function IndGraphFat(A::Array{T,2}) where {T <: RealOrComplex}
   m, n = size(A)
   AA = A * A'
 
-  F = LinAlg.cholfact(eye(m) + AA)
+  F = LinearAlgebra.cholfact(eye(m) + AA)
   #normrows = vec(sqrt.(sum(abs2.(A), 2)))
 
   IndGraphFat(m, n, A, AA, Array{T, 1}(m), F)
@@ -36,15 +36,15 @@ function prox!(
     ) where {T <: RealOrComplex}
 
   # y .= f.F \ (f.A * c + f.AA * d)
-  A_mul_B!(f.tmp, f.A, c)
-  A_mul_B!(y, f.AA, d)
+  mul!(f.tmp, f.A, c)
+  mul!(y, f.AA, d)
   y .+= f.tmp
   A_ldiv_B!(f.F, y)
 
   # f.A' * (d - y) + c # note: for complex the complex conjugate is used
   copy!(f.tmp, d)
   f.tmp .-= y
-  Ac_mul_B!(x, f.A, f.tmp)
+  mul!(x, adjoint(f.A), f.tmp)
   x .+= c
   return 0.0
 end
@@ -52,7 +52,7 @@ end
 function (f::IndGraphFat)(x::AbstractArray{T}, y::AbstractArray{T}) where
     {T <: RealOrComplex}
   # the tolerance in the following line should be customizable
-  A_mul_B!(f.tmp, f.A, x)
+  mul!(f.tmp, f.A, x)
   f.tmp .-= y
   if norm(f.tmp, Inf) <= 1e-10
     return 0.0

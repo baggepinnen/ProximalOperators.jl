@@ -2,6 +2,15 @@
 
 export IndAffine
 
+### ABSTRACT TYPE
+
+abstract type IndAffine <: ProximableFunction end
+
+is_affine(f::IndAffine) = true
+is_generalized_quadratic(f::IndAffine) = true
+
+fun_name(f::IndAffine) = "Indicator of an affine subspace"
+
 """
 **Indicator of an affine subspace**
 
@@ -18,18 +27,6 @@ S = \\{x : \\langle A, x \\rangle = b\\}.
 By default, a direct method (QR factorization of matrix `A'`) is used to evaluate `prox!`.
 If `iterative=true`, then `prox!` is evaluated approximately using an iterative method instead.
 """
-
-### ABSTRACT TYPE
-
-abstract type IndAffine <: ProximableFunction end
-
-is_affine(f::IndAffine) = true
-is_generalized_quadratic(f::IndAffine) = true
-
-fun_name(f::IndAffine) = "Indicator of an affine subspace"
-
-### CONSTRUCTORS
-
 function IndAffine(A::M, b::V; iterative=false) where {M, V}
   if iterative == false
     IndAffineDirect(A, b)

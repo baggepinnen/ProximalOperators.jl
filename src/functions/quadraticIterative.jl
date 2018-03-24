@@ -16,7 +16,7 @@ function QuadraticIterative(Q::M, q::V) where {R <: Real, M, V <: AbstractVector
 end
 
 function (f::QuadraticIterative{R, M, V})(x::AbstractArray{R}) where {R, M, V}
-  A_mul_B!(f.temp, f.Q, x)
+  mul!(f.temp, f.Q, x)
   return 0.5*vecdot(x, f.temp) + vecdot(x, f.q)
 end
 
@@ -24,13 +24,13 @@ function prox!(y::AbstractArray{R}, f::QuadraticIterative{R, M, V}, x::AbstractA
   f.temp .= x./gamma .- f.q
   op = Shift(f.Q, one(R)/gamma)
   IterativeSolvers.cg!(y, op, f.temp)
-  A_mul_B!(f.temp, f.Q, y)
+  mul!(f.temp, f.Q, y)
   fy = 0.5*vecdot(y, f.temp) + vecdot(y, f.q)
   return fy
 end
 
 function gradient!(y::AbstractArray{R}, f::QuadraticIterative{R, M, V}, x::AbstractArray{R}) where {R, M, V}
-  A_mul_B!(y, f.Q, x)
+  mul!(y, f.Q, x)
   y .+= f.q
   return 0.5*(vecdot(x, y) + vecdot(x, f.q))
 end

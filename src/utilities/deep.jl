@@ -6,7 +6,7 @@ deepsimilar(x::AbstractArray) = similar(x)
 
 deepcopy!{T <: Tuple}(y::T, x::T) = deepcopy!.(y, x)
 
-deepcopy!{R <: Number}(y::AbstractArray{R}, x::AbstractArray{R}) = copy!(y, x)
+deepcopy!{R <: Number}(y::AbstractArray{R}, x::AbstractArray{R}) = copyto!(y, x)
 
 deeplength(x::Tuple) = sum(deeplength.(x))
 

@@ -1,5 +1,8 @@
 using ProximalOperators
-using Base.Test
+using Test
+using Random
+using Printf
+using LinearAlgebra
 
 srand(0)
 
@@ -65,7 +68,7 @@ end
 
 @testset "Utilities" begin
   include("test_deep.jl")
-  include("test_symmetricpacked.jl")
+  # include("test_symmetricpacked.jl")
 end
 
 @testset "Functions" begin

@@ -13,8 +13,7 @@ f(X) = \\|X\\|_* = λ ∑_i σ_i(X),
 ```
 where `λ` is a positive parameter and ``σ_i(X)`` is ``i``-th singular value of matrix ``X``.
 """
-
-immutable NuclearNorm{R <: Real} <: ProximableFunction
+struct NuclearNorm{R <: Real} <: ProximableFunction
   lambda::R
   function NuclearNorm{R}(lambda::R) where {R <: Real}
     if lambda < 0
@@ -44,7 +43,7 @@ function prox!(Y::AbstractMatrix{T}, f::NuclearNorm{R}, X::AbstractMatrix{T}, ga
   Vt_thresh = view(F[:Vt], 1:rankY, :)
   U_thresh = view(F[:U], :, 1:rankY)
   M = S_thresh[1:rankY] .* Vt_thresh
-  A_mul_B!(Y, U_thresh, M)
+  mul!(Y, U_thresh, M)
   return f.lambda * sum(S_thresh);
 end
 

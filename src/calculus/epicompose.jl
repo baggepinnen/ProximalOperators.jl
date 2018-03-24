@@ -41,7 +41,7 @@ function prox!(y, g::Epicompose{S, T}, x, gamma) where {T <: ProximableFunction,
   # this line here allocates stuff
   z = (g.L'*x)/f.mu
   p, v = prox(g.f, z, gamma/f.mu)
-  A_mul_B!(y, f.L, p)
+  mul!(y, f.L, p)
   return v
 end
 
@@ -56,7 +56,7 @@ function prox!(y, g::Epicompose{S, T}, x, gamma) where {T <: Quadratic, S <: Abs
   else
     error("not implemented")
   end
-  A_mul_B!(y, g.L, p)
+  mul!(y, g.L, p)
   return fy
 end
 

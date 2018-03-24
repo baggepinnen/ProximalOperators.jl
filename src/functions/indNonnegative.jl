@@ -12,23 +12,22 @@ Returns the indicator of the set
 C = \\{ x : x \\geq 0 \\}.
 ```
 """
-
-immutable IndNonnegative <: ProximableFunction end
+struct IndNonnegative <: ProximableFunction end
 
 is_separable(f::IndNonnegative) = true
 is_convex(f::IndNonnegative) = true
 is_cone(f::IndNonnegative) = true
 
-function (f::IndNonnegative){R <: Real}(x::AbstractArray{R})
+function (f::IndNonnegative)(x::AbstractArray{R}) where {R <: Real}
   for k in eachindex(x)
     if x[k] < 0
       return +Inf
     end
   end
-  return 0.0
+  return zero(R)
 end
 
-function prox!{R <: Real}(y::AbstractArray{R}, f::IndNonnegative, x::AbstractArray{R}, gamma::Real=1.0)
+function prox!(y::AbstractArray{R}, f::IndNonnegative, x::AbstractArray{R}, gamma::R=one(R)) where {R <: Real}
   for k in eachindex(x)
     if x[k] < 0
       y[k] = zero(R)
@@ -36,19 +35,17 @@ function prox!{R <: Real}(y::AbstractArray{R}, f::IndNonnegative, x::AbstractArr
       y[k] = x[k]
     end
   end
-  return 0.0
+  return zero(R)
 end
 
-prox!{R <: Real}(y::AbstractArray{R}, f::IndNonnegative, x::AbstractArray{R}, gamma::AbstractArray{R}) = prox!(y, f, x, 1.0)
+prox!(y::AbstractArray{R}, f::IndNonnegative, x::AbstractArray{R}, gamma::AbstractArray{R}) where {R <: Real} = prox!(y, f, x, 1.0)
 
 fun_name(f::IndNonnegative) = "indicator of the Nonnegative cone"
 fun_dom(f::IndNonnegative) = "AbstractArray{Real}"
 fun_expr(f::IndNonnegative) = "x ↦ 0 if all(0 ⩽ x), +∞ otherwise"
 fun_params(f::IndNonnegative) = "none"
 
-function prox_naive{R <: Real}(f::IndNonnegative, x::AbstractArray{R}, gamma::Real=1.0)
+function prox_naive(f::IndNonnegative, x::AbstractArray{R}, gamma) where {R <: Real}
   y = max.(zero(R), x)
   return y, 0.0
 end
-
-prox_naive{R <: Real}(f::IndNonnegative, x::AbstractArray{R}, gamma::AbstractArray) = prox_naive(f, x, 1.0)

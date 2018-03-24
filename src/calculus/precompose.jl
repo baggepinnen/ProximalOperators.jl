@@ -13,12 +13,11 @@ g(x) = f(Lx + b)
 ```
 where ``f`` is a convex function and ``L`` is a linear mapping: this must satisfy ``LL^* = μI`` for ``μ ⩾ 0``. Furthermore, either ``f`` is separable or parameter `μ` is a scalar, for the `prox` of ``g`` to be computable.
 
-Parameter `L` defines ``L`` through the `A_mul_B!` and `Ac_mul_B!` methods. Therefore `L` can be an `AbstractMatrix` for example, but not necessarily.
+Parameter `L` defines ``L`` through the `mul!` method. Therefore `L` can be an `AbstractMatrix` for example, but not necessarily.
 
 In this case, `prox` and `prox!` are computed according to Prop. 24.14 in Bauschke, Combettes "Convex Analisys and Monotone Operator Theory in Hilbert Spaces", 2nd edition, 2016. The same result is Prop. 23.32 in the 1st edition of the same book.
 """
-
-immutable Precompose{T <: ProximableFunction, R <: Real, C <: Union{R, Complex{R}}, U <: Union{C, AbstractArray{C}}, V <: Union{C, AbstractArray{C}}, M} <: ProximableFunction
+struct Precompose{T <: ProximableFunction, R <: Real, C <: Union{R, Complex{R}}, U <: Union{C, AbstractArray{C}}, V <: Union{C, AbstractArray{C}}, M} <: ProximableFunction
   f::T
   L::M
   mu::U
@@ -53,11 +52,11 @@ function (g::Precompose)(x::T) where {T <: Union{Tuple, AbstractArray}}
   return g.f(g.L*x .+ g.b)
 end
 
-function gradient!{T <: RealOrComplex}(y::AbstractArray{T}, g::Precompose, x::AbstractArray{T})
+function gradient!(y::AbstractArray{T}, g::Precompose, x::AbstractArray{T}) where {T <: RealOrComplex}
   res = g.L*x .+ g.b
   gradres = similar(res)
   v = gradient!(gradres, g.f, res)
-  Ac_mul_B!(y, g.L, gradres)
+  mul!(y, adjoint(g.L), gradres)
   return v
 end
 
@@ -74,7 +73,7 @@ function prox!(y::AbstractArray{C}, g::Precompose, x::AbstractArray{C}, gamma::R
   v = prox!(proxres, g.f, res, g.mu.*gamma)
   proxres .-= res
   proxres ./= g.mu
-  Ac_mul_B!(y, g.L, proxres)
+  mul!(y, adjoint(g.L), proxres)
   y .+= x
   return v
 end

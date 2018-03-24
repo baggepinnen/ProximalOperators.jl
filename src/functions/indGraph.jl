@@ -18,7 +18,6 @@ prox!((c, d), f, (x, y))
 ```
 writes to `(c, d)` the projection onto ``G_A`` of `(x, y)`.
 """
-
 abstract type IndGraph <: ProximableFunction end
 
 function IndGraph(A::AbstractArray{T,2}) where {T <: RealOrComplex}

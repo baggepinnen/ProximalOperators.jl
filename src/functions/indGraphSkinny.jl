@@ -7,7 +7,7 @@ struct IndGraphSkinny{T <: RealOrComplex} <: IndGraph
   n::Int
   A::Array{T,2}
   AA::Array{T,2}
-  F::Base.LinAlg.Cholesky{T, Array{T, 2}} #LL factorization
+  F::LinearAlgebra.Cholesky{T, Array{T, 2}} #LL factorization
   tmp::Array{T,1}
 end
 
@@ -15,7 +15,7 @@ function IndGraphSkinny(A::Array{T,2}) where {T <: RealOrComplex}
   m, n = size(A)
   AA = A' * A
 
-  F = LinAlg.cholfact(AA + eye(n))
+  F = LinearAlgebra.cholfact(AA + eye(n))
   #normrows = vec(sqrt.(sum(abs2.(A), 2)))
 
   #The tmp vector assumes that difference between m and n is not drastic.
@@ -29,7 +29,7 @@ end
 function (f::IndGraphSkinny)(x::AbstractArray{T}, y::AbstractArray{T}) where
     {T <: RealOrComplex}
   # the tolerance in the following line should be customizable
-  A_mul_B!(f.tmp, f.A, x)
+  mul!(f.tmp, f.A, x)
   f.tmp .-= y
   if norm(f.tmp, Inf) <= 1e-10
     return 0.0
@@ -51,7 +51,7 @@ function prox!(
   x .+= c
   A_ldiv_B!(f.F, x)
 
-  A_mul_B!(y, f.A, x)
+  mul!(y, f.A, x)
   return 0.0
 end
 

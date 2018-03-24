@@ -2,6 +2,16 @@
 
 export Quadratic
 
+### ABSTRACT TYPE
+
+abstract type Quadratic <: ProximableFunction end
+
+is_convex(f::Quadratic) = true
+is_smooth(f::Quadratic) = true
+is_quadratic(f::Quadratic) = true
+
+fun_name(f::Quadratic) = "Quadratic function"
+
 """
 **Quadratic function**
 
@@ -14,19 +24,6 @@ f(x) = \\tfrac{1}{2}\\langle Qx, x\\rangle + \\langle q, x \\rangle.
 By default, a direct method (based on Cholesky factorization) is used to evaluate `prox!`.
 If `iterative=true`, then `prox!` is evaluated approximately using an iterative method instead.
 """
-
-### ABSTRACT TYPE
-
-abstract type Quadratic <: ProximableFunction end
-
-is_convex(f::Quadratic) = true
-is_smooth(f::Quadratic) = true
-is_quadratic(f::Quadratic) = true
-
-fun_name(f::Quadratic) = "Quadratic function"
-
-### CONSTRUCTORS
-
 function Quadratic(Q::M, q::V; iterative=false) where {M, V}
   if iterative == false
     QuadraticDirect(Q, q)

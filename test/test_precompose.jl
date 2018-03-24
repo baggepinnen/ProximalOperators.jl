@@ -2,7 +2,7 @@
 
 f = IndBallL1()
 A = randn(10, 10)
-Q, ~ = qr(A)
+Q, ~ = LinearAlgebra.qr(A)
 
 @test vecnorm(Q'*Q - I) <= 1e-12
 @test vecnorm(Q*Q' - I) <= 1e-12
@@ -23,7 +23,7 @@ prox_test(g, x, 1.0)
 # Larger example
 
 A = randn(500, 500)
-Q, ~ = qr(A)
+Q, ~ = LinearAlgebra.qr(A)
 
 @test vecnorm(Q'*Q - I) <= 1e-12
 @test vecnorm(Q*Q' - I) <= 1e-12
@@ -39,7 +39,7 @@ prox_test(g, x, 1.0)
 
 f = NormL1()
 A = randn(50, 50)
-Q, ~ = qr(A)
+Q, ~ = LinearAlgebra.qr(A)
 
 @test vecnorm(Q'*Q - I) <= 1e-12
 @test vecnorm(Q*Q' - I) <= 1e-12
@@ -55,7 +55,7 @@ prox_test(g, x, 1.0)
 
 f = NormL2()
 A = randn(500, 500)
-Q, ~ = qr(A)
+Q, ~ = LinearAlgebra.qr(A)
 
 @test vecnorm(Q'*Q - I) <= 1e-12
 @test vecnorm(Q*Q' - I) <= 1e-12
@@ -72,7 +72,7 @@ prox_test(g, x, 1.0)
 f = NormL2()
 A = randn(500, 500)
 b = randn(500)
-Q, ~ = qr(A)
+Q, ~ = LinearAlgebra.qr(A)
 
 @test vecnorm(Q'*Q - I) <= 1e-12
 @test vecnorm(Q*Q' - I) <= 1e-12

@@ -13,7 +13,6 @@ f(x) = μ⋅∑_i \\max\\{0, 1 - y_i ⋅ x_i\\}^2,
 ```
 where `y` is an array and `μ` is a positive parameter.
 """
-
 struct SqrHingeLoss{R <: Real, T <: AbstractArray{R}} <: ProximableFunction
   y::T
   mu::R
@@ -32,7 +31,7 @@ is_smooth(f::SqrHingeLoss) = true
 
 SqrHingeLoss(b::T, mu::R=1.0) where {R <: Real, T <: AbstractArray{R}} = SqrHingeLoss{R, T}(b, mu)
 
-(f::SqrHingeLoss){R <: Real, T <: AbstractArray{R}}(x::T) = f.mu*sum(max.(zero(R), (one(R) .- f.y.*x)).^2)
+(f::SqrHingeLoss)(x::T) where {R <: Real, T <: AbstractArray{R}} = f.mu*sum(max.(zero(R), (one(R) .- f.y.*x)).^2)
 
 function gradient!(y::AbstractArray{R}, f::SqrHingeLoss{R, T}, x::AbstractArray{R}) where {R <: Real, T}
 	sum = zero(R)
@@ -66,6 +65,6 @@ fun_params(f::SqrHingeLoss) = "b = $(typeof(f.y)), μ = $(f.mu)"
 function prox_naive(f::SqrHingeLoss{R, T}, x::AbstractArray{R}, gamma::R=one(R)) where {R, T}
     flag = f.y.*x .<= 1
     z = copy(x)
-    z[flag] = (x[flag] .+ 2.*f.mu.*gamma.*f.y[flag])./(1.+2.*f.mu.*gamma.*f.y[flag].^2)
-    return z, f.mu*sum(max.(0.0, 1.-f.y.*z).^2)
+    z[flag] = (x[flag] .+ 2 .* f.mu .* gamma .* f.y[flag]) ./ (1 .+ 2 .* f.mu .* gamma .* f.y[flag].^2)
+    return z, f.mu*sum(max.(0.0, 1 .- f.y.*z).^2)
 end

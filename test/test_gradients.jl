@@ -1,7 +1,7 @@
 
 function gradient_fd(f,x) #compute gradient using finite differences
-	gradfd = zeros(x)
-	xeps = zeros(x)
+	gradfd = zero(x)
+	xeps = zero(x)
 	for i in eachindex(gradfd)
 		xeps .= x
 		xeps[i] += sqrt(eps())
@@ -57,7 +57,7 @@ stuff = [
       ),
   Dict( "f"      => HuberLoss(2., 3.),
         "x"      => [-1., 0.5],
-        "∇f(x)"  => 3.*[-1., 0.5],
+        "∇f(x)"  => 3 .* [-1., 0.5],
       ),
   Dict( "f"      => HuberLoss(2., 3.),
         "x"      => [-2., 1.5],
@@ -117,19 +117,19 @@ stuff = [
       ),
   Dict( "f"      => SqrHingeLoss([1.0, -1.0, 1.0, -1.0, 1.0], 1.5),
        "x"      => randn(srand(0),5),
-       "∇f(x)"  => gradient_fd(SqrHingeLoss([1.0, -1.0, 1.0, -1.0, 1.0], 1.5),randn(srand(0),5)) 
+       "∇f(x)"  => gradient_fd(SqrHingeLoss([1.0, -1.0, 1.0, -1.0, 1.0], 1.5),randn(srand(0),5))
       ),
   Dict( "f"      => CrossEntropy([1.0, 0., 1.0,  0., 1.0]),
        "x"      => rand(srand(0),5),
-       "∇f(x)"  => gradient_fd(CrossEntropy([1.0, 0., 1.0,  0., 1.0]),rand(srand(0),5)) 
+       "∇f(x)"  => gradient_fd(CrossEntropy([1.0, 0., 1.0,  0., 1.0]),rand(srand(0),5))
       ),
   Dict( "f"      => CrossEntropy([true, false, true,  false, true]),
        "x"      => rand(srand(0),5),
-       "∇f(x)"  => gradient_fd(CrossEntropy([true, false, true,  false, true]),rand(srand(0),5)) 
+       "∇f(x)"  => gradient_fd(CrossEntropy([true, false, true,  false, true]),rand(srand(0),5))
       ),
   Dict( "f"      => CrossEntropy([true, false, true,  false, true]),
        "x"      => rand(srand(0),1,5),
-       "∇f(x)"  => gradient_fd(CrossEntropy([true, false, true,  false, true]),rand(srand(0),1,5)) 
+       "∇f(x)"  => gradient_fd(CrossEntropy([true, false, true,  false, true]),rand(srand(0),1,5))
       ),
 ]
 
@@ -171,6 +171,6 @@ for i = 1:length(stuff)
         @test f(x+d) ≈ fx + dot(d, ∇f) atol=TOL_ASSERT
       end
     end
-    x = rand(size(x))
+    x = rand(x)
   end
 end

@@ -1,6 +1,6 @@
-import Base.LinAlg: Char, BlasInt, chkstride1
-import Base.LinAlg.LAPACK: chklapackerror
-import Base.LinAlg.BLAS.@blasfunc
+import LinearAlgebra: Char, BlasInt, chkstride1
+import LinearAlgebra.LAPACK: chklapackerror
+import LinearAlgebra.BLAS.@blasfunc
 
 """
     dspev!(jobz::Char, uplo::Char, x::StridedVector{Float64})
@@ -31,7 +31,7 @@ function dspev!(jobz::Char, uplo::Char, A::StridedVector{Float64})
     end
     W     = similar(A, Float64, n)
     Z     = similar(A, Float64, n, n)
-    work  = Array{Float64}(1)
+    work  = Array{Float64}(undef, 1)
     lwork = BlasInt(3*n)
     info  = Ref{BlasInt}()
     work = Array{Float64}(lwork)

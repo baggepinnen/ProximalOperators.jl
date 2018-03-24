@@ -11,21 +11,17 @@ f^γ(x) = \\min_z \\left\\{ f(z) + \\tfrac{1}{2γ}\\|z-x\\|^2 \\right\\}.
 ```
 If ``f`` is convex, then ``f^γ`` is a smooth, convex, lower approximation to ``f``, having the same minima as the original function.
 """
-
-immutable MoreauEnvelope{R <: Real, T <: ProximableFunction} <: ProximableFunction
+struct MoreauEnvelope{R <: Real, T <: ProximableFunction} <: ProximableFunction
 	g::T
 	lambda::R
-	# dirty trick to use in place prox! when evaluating the function
-	# not sure about that!
-	buf::AbstractVector{Nullable{AbstractArray}}
 end
 
 function MoreauEnvelope{R, T}(g::T, lambda::R) where {R <: Real, T <: ProximableFunction}
 	if lambda <= 0 error("parameter lambda must be positive") end
-	MoreauEnvelope{R, T}(g, lambda, [ Nullable{AbstractArray}() ])
+	MoreauEnvelope{R, T}(g, lambda)
 end
 
-MoreauEnvelope{R <: Real, T <: ProximableFunction}(g::T, lambda::R=1.0) = MoreauEnvelope{R, T}(g, lambda)
+MoreauEnvelope(g::T, lambda::R=1.0) where {R <: Real, T <: ProximableFunction} = MoreauEnvelope{R, T}(g, lambda)
 
 is_convex(f::MoreauEnvelope) = is_convex(f.g)
 is_smooth(f::MoreauEnvelope) = is_convex(f.g)
@@ -36,8 +32,8 @@ function (f::MoreauEnvelope)(x::AbstractArray)
 	if isnull(f.buf[1])
 		f.buf[1] = Nullable{AbstractArray}(similar(x))
 	end
-	g_prox = prox!(get(f.buf[1]), f.g, x, f.lambda)
-	return g_prox + 1/(2*f.lambda)*deepvecnorm(get(f.buf[1])-x)^2
+	y, g_y = prox(f.g, x, f.lambda)
+	return g_y + 1/(2*f.lambda)*deepvecnorm(y-x)^2
 end
 
 function gradient!(grad::AbstractArray, f::MoreauEnvelope, x::AbstractArray)

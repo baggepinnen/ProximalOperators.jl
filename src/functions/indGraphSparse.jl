@@ -4,7 +4,7 @@ struct IndGraphSparse{T <: RealOrComplex, Ti} <: IndGraph
   m::Int
   n::Int
   A::SparseMatrixCSC{T, Ti}
-  F::Base.SparseArrays.CHOLMOD.Factor{T} #LDL factorization
+  F::SuiteSparse.CHOLMOD.Factor{T} #LDL factorization
 
   tmp::Array{T, 1}
   tmpx::SubArray{T, 1, Array{T, 1}, Tuple{UnitRange{Int}}, true}
@@ -17,7 +17,7 @@ function IndGraphSparse(A::SparseMatrixCSC{T,Ti}) where
   m, n = size(A)
   K = [speye(n) A'; A -speye(m)]
 
-  F = LinAlg.ldltfact(K)
+  F = LinearAlgebra.ldltfact(K)
 
   tmp = Array{T,1}(m + n)
   tmpx = view(tmp, 1:n)
@@ -55,7 +55,7 @@ function (f::IndGraphSparse)(x::AbstractVector{T}, y::AbstractVector{T}) where
     {T <: RealOrComplex}
   # the tolerance in the following line should be customizable
   tmpy = view(f.res, 1:f.m) # the res is rewritten in prox!
-  A_mul_B!(tmpy, f.A, x)
+  mul!(tmpy, f.A, x)
   tmpy .-= y
   if norm(tmpy, Inf) <= 1e-12
     return 0.0

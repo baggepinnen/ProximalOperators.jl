@@ -4,7 +4,12 @@ __precompile__()
 
 module ProximalOperators
 
+using LinearAlgebra
+using SparseArrays
+using SuiteSparse
 using IterativeSolvers
+
+import LinearAlgebra: gradient
 
 const RealOrComplex{T <: Real} = Union{T, Complex{T}}
 const HermOrSym{T, S} = Union{Hermitian{T, S}, Symmetric{T, S}}
@@ -13,15 +18,13 @@ export ProximableFunction
 export prox, prox!
 export gradient!
 
-import Base: gradient
-
 abstract type ProximableFunction end
 
 # Utilities
 
 include("utilities/deep.jl")
 include("utilities/linops.jl")
-include("utilities/symmetricpacked.jl")
+# include("utilities/symmetricpacked.jl")
 include("utilities/uniformarrays.jl")
 include("utilities/vecnormdiff.jl")
 
@@ -123,7 +126,6 @@ Return values:
 * `y`: the proximal point ``y``
 * `fy`: the value ``f(y)``
 """
-
 function prox(f::ProximableFunction, x, gamma=1.0)
   y = deepsimilar(x)
   fy = prox!(y, f, x, gamma)
@@ -144,7 +146,6 @@ The resulting point ``y`` is written to the (pre-allocated) array `y`, which mus
 Return values:
 * `fy`: the value ``f(y)``
 """
-
 prox!
 
 """
@@ -158,7 +159,6 @@ Return values:
 * `gradfx`: the (sub)gradient of ``f`` at ``x``
 * `fx`: the value ``f(x)``
 """
-
 function gradient(f::ProximableFunction, x)
 	y = deepsimilar(x)
 	fx = gradient!(y, f, x)
@@ -175,7 +175,6 @@ Writes ``\\nabla f(x)`` to `gradfx`, which must be pre-allocated and have the sa
 Return values:
 * `fx`: the value ``f(x)``
 """
-
 gradient!
 
 end
