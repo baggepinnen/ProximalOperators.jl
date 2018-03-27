@@ -21,7 +21,7 @@ function MoreauEnvelope{R, T}(g::T, lambda::R) where {R <: Real, T <: Proximable
 	MoreauEnvelope{R, T}(g, lambda)
 end
 
-MoreauEnvelope(g::T, lambda::R=1.0) where {R <: Real, T <: ProximableFunction} = MoreauEnvelope{R, T}(g, lambda)
+# MoreauEnvelope(g::T, lambda::R=1.0) where {R <: Real, T <: ProximableFunction} = MoreauEnvelope{R, T}(g, lambda)
 
 is_convex(f::MoreauEnvelope) = is_convex(f.g)
 is_smooth(f::MoreauEnvelope) = is_convex(f.g)

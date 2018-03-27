@@ -32,6 +32,7 @@ AAc(A::M) where {M} = AAc{M, eltype(A)}(A)
 function mul!(y, Op::AAc, x)
   mul!(Op.buf, adjoint(Op.A), x)
   mul!(y, Op.A, Op.buf)
+  return y
 end
 
 mul!(y, Op::Adjoint{AAc}, x) = mul!(y, adjoint(Op), x)
@@ -54,6 +55,7 @@ AcA(A::M) where {M} = AcA{M, eltype(A)}(A)
 function mul!(y, Op::AcA, x)
   mul!(Op.buf, Op.A, x)
   mul!(y, adjoint(Op.A), Op.buf)
+  return y
 end
 
 mul!(y, Op::Adjoint{AcA}, x) = mul!(y, adjoint(Op), x)
@@ -79,11 +81,13 @@ Shift(A::M, rho::T) where {M, T} = Shift{M, T}(A, rho)
 function mul!(y, Op::Shift, x)
   mul!(y, Op.A, x)
   y .+= Op.rho .* x
+  return y
 end
 
 function mul!(y, Op::Adjoint{Shift}, x)
   mul!(y, adjoint(Op.A), x)
   y .+= Op.rho .* x
+  return y
 end
 
 size(Op::Shift) = size(Op.A, 2), size(Op.A, 2)

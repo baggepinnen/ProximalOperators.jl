@@ -151,26 +151,4 @@ for i = 1:length(stuff)
   @test fx == ref_fx || abs(fx-ref_fx)/(1+abs(ref_fx)) <= TOL_ASSERT
   @test ∇f == ref_∇f || norm(∇f-ref_∇f)/(1+norm(ref_∇f)) <= sqrt(TOL_ASSERT)
 
-  for j = 1:11
-    #For initial point x and 10 other random points
-    fx = gradient!(∇f, f, x)
-    for k = 1:10
-      # Test conditions in different directions
-      if ProximalOperators.is_convex(f)
-        # Test ∇f is subgradient
-	if typeof(f) <: CrossEntropy
-		d = x.*(rand(size(x)).-1)./2 # assures 0 <= x+d <= 1
-	else
-		d = randn(size(x))
-	end
-        @test f(x+d) ≥ fx + dot(d, ∇f) - TOL_ASSERT
-      else
-        # Assume smooth function
-        d = randn(size(x))
-        d ./= norm(d).*sqrt(TOL_ASSERT)
-        @test f(x+d) ≈ fx + dot(d, ∇f) atol=TOL_ASSERT
-      end
-    end
-    x = rand(x)
-  end
 end

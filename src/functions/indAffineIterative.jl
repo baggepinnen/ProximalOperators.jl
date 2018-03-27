@@ -10,7 +10,7 @@ struct IndAffineIterative{R <: Real, T <: RealOrComplex{R}, M <: AbstractMatrix{
     if size(A,1) > size(A,2)
       error("A must be full row rank")
     end
-    normrowsinv = 1.0 ./ vec(sqrt.(sum(abs2.(A), 2)))
+    normrowsinv = 1.0 ./ vec(sqrt.(sum(abs2.(A), dims=2)))
     A = normrowsinv.*A # normalize rows of A
     b = normrowsinv.*b # and b accordingly
     new(A, b, similar(b), 1000, 1e-8)

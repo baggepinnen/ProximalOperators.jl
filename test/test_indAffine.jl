@@ -20,6 +20,8 @@ y, fy = prox_test(f, x)
 
 # Sparse matrix
 
+using SparseArrays
+
 m, n = 10, 30
 A = sprandn(m, n, 0.5)
 b = randn(m)
