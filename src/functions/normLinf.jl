@@ -20,10 +20,21 @@ function (f::Conjugate{IndBallL1{R}})(x::AbstractArray{S}) where {R <: Real, S <
 end
 
 function gradient!(y::AbstractArray{T}, f::Conjugate{IndBallL1{R}}, x::AbstractArray{T}) where {T <: RealOrComplex, R <: Real}
-  absxi, i = findmax(abs(xi) for xi in x) # Largest absolute value
+  # Find largest absolute value -- replaces:
+  #   absxi, i = findmax(abs(xi) for xi in x)
+  # which doesn't seem to work anymore in Julia 0.7
+  imax = 1
+  amax = abs(x[1])
+  for i = 2:length(x)
+    absxi = abs(x[i])
+    if absxi > amax
+      imax = i
+      amax = absxi
+    end
+  end
   y .= 0
-  y[i] = f.f.r*sign(x[i])
-  return f.f.r*absxi
+  y[imax] = f.f.r*sign(x[imax])
+  return f.f.r*amax
 end
 
 fun_name(f::Postcompose{Conjugate{IndBallL1{R}}, R}) where {R <: Real} = "weighted L-infinity norm"
